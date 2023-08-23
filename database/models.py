@@ -1,64 +1,80 @@
-from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, Float, BigInteger
+from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, BigInteger
 from sqlalchemy.orm import relationship
 
 from database import Base
 
 
-# Таблица пользователей
 class User(Base):
     __tablename__ = 'users'
+
     id = Column(BigInteger, autoincrement=True, primary_key=True)
-    name = Column(String, nullable=False)
-    email = Column(String, nullable=False)
-    user_city = Column(String, nullable=True)
+    login = Column(String, nullable=False)
     phone_number = Column(String, nullable=True)
     password = Column(String)
+
+    nickname = Column(String, nullable=False)
+    gender = Column(String, nullable=False)
+    age = Column(Integer, nullable=False)
+    city = Column(String, nullable=True)
 
     reg_date = Column(DateTime)
 
 
-# Таблица постов
-class UserPost(Base):
-    __tablename__ = 'user_posts'
+class Post(Base):
+    __tablename__ = 'posts'
+
     id = Column(BigInteger, autoincrement=True, primary_key=True)
-    main_text = Column(String, nullable=True)
-    user_id = Column(BigInteger, ForeignKey('users.id'))
+    user_id = Column(BigInteger, ForeignKey('user_posts.id'))
+
+    label = Column(String, nullable=True)
+    text = Column(String, nullable=True)
+
     reg_date = Column(DateTime)
 
     user_fk = relationship(User, lazy='subquery')
 
 
-# Таблица фотографий
-class PostPhoto(Base):
-    __tablename__ = 'post_photos'
+class Survey(Base):
+    __tablename__ = 'surveys'
+
     id = Column(BigInteger, autoincrement=True, primary_key=True)
-    post_id = Column(BigInteger, ForeignKey('user_posts.id'))
-    photo_path = Column(String,nullable=False)
+    user_id = Column(BigInteger, ForeignKey('user_posts.id'))
 
-    post_fk = relationship(UserPost, lazy='subquery')
-
-
-# Таблица хештегов
-class Hashtag(Base):
-    __tablename__ = 'hashtags'
-    id = Column(BigInteger, autoincrement=True, primary_key=True)
-    post_id = Column(BigInteger, ForeignKey('user_posts.id'))
-    hashtag_name = Column(String, nullable=False, unique=True)
+    choice1 = Column(String, nullable=True)
+    choice2 = Column(String, nullable=True)
+    choice3 = Column(String, nullable=True)
+    choice4 = Column(String, nullable=True)
 
     reg_date = Column(DateTime)
 
-    post_fk = relationship(UserPost, lazy='subquery')
+    user_fk = relationship(User, lazy='subquery')
 
 
-# Таблица комментариев
-class Comment(Base):
-    __tablename__ = 'comments'
+class CommentOnPost(Base):
+    __tablename__ = 'comments_on_posts'
+
     id = Column(BigInteger, autoincrement=True, primary_key=True)
     post_id = Column(BigInteger, ForeignKey('user_posts.id'))
     user_id = Column(BigInteger, ForeignKey('users.id'))
-    text = Column(String, nullable=False, unique=True)
+
+    text = Column(String, nullable=False)
 
     reg_date = Column(DateTime)
 
-    post_fk = relationship(UserPost, lazy='subquery')
+    post_fk = relationship(Post, lazy='subquery')
+    user_fk = relationship(User, lazy='subquery')
+
+
+class CommentOnSurvey(Base):
+    __tablename__ = 'comments_on_surveys'
+
+    id = Column(BigInteger, autoincrement=True, primary_key=True)
+    survey_id = Column(BigInteger, ForeignKey('user_posts.id'))
+    user_id = Column(BigInteger, ForeignKey('users.id'))
+
+    text = Column(String, nullable=False)
+
+    reg_date = Column(DateTime)
+
+    survey_fk = relationship(Survey, lazy='subquery')
     user_fk = relationship(User, lazy='subquery')
