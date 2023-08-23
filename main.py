@@ -6,8 +6,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 from api.comments_on_posts_api import comments
-from api.hashtag_api import hashtags
+from api.comments_on_surveys import comments
 from api.posts_api import posts
-from api.photo_api import photos
+from api.surveys_api import surveys
 from api.users_api import users
-
